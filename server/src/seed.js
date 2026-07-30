@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
 const path = require('path');
-require('dotenv').config({ path: path.join(__dirname, '../.env') });
+require('dotenv').config({ path: path.join(__dirname, '../../.env') });
 
 const { User, Exhibition, Customer, Event, Registration, sequelize } = require('./models');
 
