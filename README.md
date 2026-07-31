@@ -84,6 +84,7 @@ npm run dev:client   # 前端 http://localhost:5173
 ```
 nodeExpress/
 ├── server/                     # 后端服务
+│   ├── uploads/                # 上传文件存储目录
 │   ├── src/
 │   │   ├── app.js             # 服务入口
 │   │   ├── seed.js            # 数据初始化脚本
@@ -98,6 +99,9 @@ nodeExpress/
 │   │   │   ├── eventController.js
 │   │   │   └── dashboardController.js
 │   │   ├── routes/            # 路由定义
+│   │   │   ├── index.js
+│   │   │   ├── upload.js      # 图片上传路由
+│   │   │   └── ...
 │   │   └── middleware/
 │   │       └── auth.js        # JWT 认证中间件
 │   ├── .env                   # 环境变量
@@ -109,6 +113,8 @@ nodeExpress/
 │   │   ├── api/index.js       # API 封装
 │   │   ├── router/index.js    # 路由配置
 │   │   ├── stores/user.js     # 状态管理
+│   │   ├── tools/             # 通用组件
+│   │   │   └── ImageUpload.vue # 图片上传组件
 │   │   ├── layouts/
 │   │   │   └── MainLayout.vue # 主布局
 │   │   └── views/             # 页面组件
@@ -168,6 +174,12 @@ nodeExpress/
 |------|------|------|
 | GET | `/api/events/registrations` | 报名列表 |
 | PUT | `/api/events/registrations/:regId` | 更新报名状态 |
+
+### 文件上传
+| 方法 | 路径 | 说明 |
+|------|------|------|
+| POST | `/api/upload` | 上传图片（form-data，字段名 `file`） |
+| DELETE | `/api/upload/:filename` | 删除已上传的文件 |
 
 ## 切换 MySQL 数据库
 

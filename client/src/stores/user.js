@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { login as loginApi, getCurrentUser } from '@/api'
+import { login as loginApi, getCurrentUser, updateUserAvatar } from '@/api'
 
 export const useUserStore = defineStore('user', () => {
   const token = ref(localStorage.getItem('token') || '')
@@ -10,6 +10,8 @@ export const useUserStore = defineStore('user', () => {
   const username = computed(() => userInfo.value?.username || '')
   const realName = computed(() => userInfo.value?.real_name || '')
   const role = computed(() => userInfo.value?.role || '')
+  // 头像统一从 userInfo 读取，保持与服务端一致
+  const avatar = computed(() => userInfo.value?.avatar || '')
 
   // 登录
   async function login(username, password) {
@@ -32,6 +34,17 @@ export const useUserStore = defineStore('user', () => {
     }
   }
 
+  // 更新头像（同步到服务端 + 更新本地 userInfo）
+  async function updateAvatar(url) {
+    try {
+      await updateUserAvatar(url)
+    } catch {
+      // 即使接口失败也更新本地显示，下次刷新会自动同步
+    }
+    userInfo.value = { ...userInfo.value, avatar: url }
+    localStorage.setItem('userInfo', JSON.stringify(userInfo.value))
+  }
+
   // 登出
   function logout() {
     token.value = ''
@@ -43,12 +56,14 @@ export const useUserStore = defineStore('user', () => {
   return {
     token,
     userInfo,
+    avatar,
     isLoggedIn,
     username,
     realName,
     role,
     login,
     fetchUserInfo,
+    updateAvatar,
     logout,
   }
 }, {

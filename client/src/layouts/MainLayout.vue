@@ -36,6 +36,17 @@
           <el-menu-item index="/events">活动管理</el-menu-item>
           <el-menu-item index="/registrations">报名管理</el-menu-item>
         </el-sub-menu>
+
+        <el-sub-menu v-if="userStore.role === 'admin'" index="system-group">
+          <template #title>
+            <el-icon><Setting /></el-icon>
+            <span>系统管理</span>
+          </template>
+          <el-menu-item index="/cleanup">
+            <el-icon><Delete /></el-icon>
+            <template #title>清理未使用图片</template>
+          </el-menu-item>
+        </el-sub-menu>
       </el-menu>
     </el-aside>
 
@@ -59,12 +70,15 @@
         <div class="header-right">
           <el-dropdown trigger="click">
             <div class="user-info">
-              <el-avatar :size="32" icon="UserFilled" />
+              <el-avatar :size="32" :src="userStore.avatar" icon="UserFilled" />
               <span class="user-name">{{ userStore.realName }}</span>
               <el-icon><ArrowDown /></el-icon>
             </div>
             <template #dropdown>
               <el-dropdown-menu>
+                <el-dropdown-item @click="handleChangeAvatar">
+                  <el-icon><Camera /></el-icon> 修改头像
+                </el-dropdown-item>
                 <el-dropdown-item @click="handleChangePassword">
                   <el-icon><Key /></el-icon> 修改密码
                 </el-dropdown-item>
@@ -101,6 +115,17 @@
       <el-button type="primary" @click="submitPasswordChange">确认修改</el-button>
     </template>
   </el-dialog>
+
+  <!-- 修改头像对话框 -->
+  <el-dialog v-model="avatarDialogVisible" title="修改头像" width="450px" :close-on-click-modal="false" destroy-on-close>
+    <div class="avatar-dialog-content">
+      <ImageUpload ref="imageUploadRef" v-model="avatarUrl" :limit="1" :key="avatarDialogVisible" tip="支持 JPG、PNG、GIF、WebP 格式，大小不超过 10MB" />
+    </div>
+    <template #footer>
+      <el-button @click="avatarDialogVisible = false">取消</el-button>
+      <el-button type="primary" @click="confirmAvatar">确认</el-button>
+    </template>
+  </el-dialog>
 </template>
 
 <script setup>
@@ -109,6 +134,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useUserStore } from '@/stores/user'
 import { changePassword } from '@/api'
+import ImageUpload from '@/tools/ImageUpload.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -180,6 +206,28 @@ const submitPasswordChange = async () => {
     router.push('/login')
   } catch {}
 }
+
+// 修改头像
+const avatarDialogVisible = ref(false)
+const avatarUrl = ref('')
+const imageUploadRef = ref(null)
+
+const handleChangeAvatar = () => {
+  avatarUrl.value = userStore.avatar
+  avatarDialogVisible.value = true
+}
+
+const confirmAvatar = async () => {
+  // 先触发 ImageUpload 执行真正的上传（如果有新选文件）
+  if (imageUploadRef.value) {
+    await imageUploadRef.value.upload()
+  }
+  userStore.updateAvatar(avatarUrl.value)
+  avatarDialogVisible.value = false
+  ElMessage.success('头像修改成功')
+}
+
+
 </script>
 
 <style scoped>
@@ -265,5 +313,11 @@ const submitPasswordChange = async () => {
   background-color: #f0f2f5;
   padding: 20px;
   overflow-y: auto;
+}
+
+.avatar-dialog-content {
+  display: flex;
+  justify-content: center;
+  padding: 20px 0;
 }
 </style>

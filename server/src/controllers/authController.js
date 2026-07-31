@@ -97,6 +97,22 @@ exports.changePassword = async (req, res) => {
   }
 };
 
+// 更新头像
+exports.updateAvatar = async (req, res) => {
+  try {
+    const { avatar } = req.body;
+    if (!avatar) {
+      return res.status(400).json({ code: 400, message: '头像地址不能为空' });
+    }
+    const user = req.user;
+    user.avatar = avatar;
+    await user.save();
+    res.json({ code: 200, message: '头像更新成功', data: { avatar } });
+  } catch (error) {
+    res.status(500).json({ code: 500, message: '头像更新失败: ' + error.message });
+  }
+};
+
 // 生成 JWT Token
 function generateToken(user) {
   return jwt.sign(

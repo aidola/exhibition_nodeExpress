@@ -60,6 +60,7 @@ export const login = (data) => request.post('/auth/login', data)
 export const register = (data) => request.post('/auth/register', data)
 export const getCurrentUser = () => request.get('/auth/me')
 export const changePassword = (data) => request.put('/auth/change-password', data)
+export const updateUserAvatar = (avatar) => request.put('/auth/avatar', { avatar })
 
 // ==================== 仪表盘 ====================
 export const getDashboardStats = () => request.get('/dashboard')
@@ -93,3 +94,15 @@ export const eventRegister = (id, data) => request.post(`/events/${id}/register`
 // ==================== 报名管理 ====================
 export const getRegistrations = (params) => request.get('/events/registrations', { params })
 export const updateRegistration = (id, data) => request.put(`/events/registrations/${id}`, data)
+
+// ==================== 文件上传 ====================
+export const uploadImage = (file) => {
+  const formData = new FormData()
+  formData.append('file', file)
+  return request.post('/upload', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  })
+}
+
+// ==================== 图片清理（管理员） ====================
+export const cleanupUnusedImages = () => request.delete('/upload/cleanup')

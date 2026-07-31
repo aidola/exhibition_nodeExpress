@@ -10,5 +10,6 @@ router.post('/login', authController.login);
 // 需要认证的接口
 router.get('/me', authenticate, authController.getCurrentUser);
 router.put('/change-password', authenticate, authController.changePassword);
+router.put('/avatar', authenticate, authController.updateAvatar);
 
 module.exports = router;

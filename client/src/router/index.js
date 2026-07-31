@@ -43,6 +43,12 @@ const routes = [
         component: () => import('@/views/events/RegistrationList.vue'),
         meta: { title: '报名管理', icon: 'List' },
       },
+      {
+        path: 'cleanup',
+        name: 'CleanupImages',
+        component: () => import('@/views/system/CleanupImages.vue'),
+        meta: { title: '清理未使用图片', icon: 'Delete' },
+      },
     ],
   },
 ]
